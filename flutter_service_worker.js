@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "assets/AssetManifest.json": "76f12795fcaa1e8a1493d400eac599ca",
+  "assets/AssetManifest.json": "c3878fed7441f9b2b09da39023f2cd3a",
 "assets/assets/icons/behance.svg": "1487dff57f5c15131037cb6965a4d0bf",
 "assets/assets/icons/check.svg": "bce7a581bb999caac446c9138a57a401",
 "assets/assets/icons/download.svg": "8c24d4679cb0c5297277321bf7b65d28",
@@ -16,6 +16,7 @@ const RESOURCES = {
 "assets/assets/icons/logo.png": "28f52ee94a30dcdea0132cd57e2ad37f",
 "assets/assets/icons/twitter.svg": "c09d9f98cb67b0dfc2aa4c63170f2632",
 "assets/assets/images/bg.jpeg": "c6449162dc3940daa640a43101cfd66c",
+"assets/assets/images/Cover.png": "609915f751b82e42e8fff10c98068a85",
 "assets/assets/images/ilustrations-003.png": "770d14e128b88fbbb5762472d74e55a6",
 "assets/assets/images/Koper001.png": "af13cc9cca7c909e0c14815efe13c9f2",
 "assets/assets/images/Liveroom.png": "320edfb91cdf9d59841ee09325240788",
@@ -23,35 +24,39 @@ const RESOURCES = {
 "assets/assets/images/logo_umi.png": "56401a0318a2167407c8092985996534",
 "assets/assets/images/lol.png": "21ae60cea799ee3a403ef439a1e9156a",
 "assets/assets/images/mockup.png": "7dd4290fec0c01139a10c6c400e68be1",
+"assets/assets/images/MockUps%25201.png": "1f10174a27e6b7ffc6952b30e440c94e",
 "assets/assets/images/pertamina.png": "d13f0e6ceb3c848329fe434972b5c3aa",
 "assets/assets/images/potion2.png": "ca5b68be3b5f102852ea0da804a1d0c7",
 "assets/assets/images/profile.png": "b376e2ecff3dd397646090bcb565ef28",
 "assets/assets/images/vocab_daily_mockup.png": "183c82f1ed356fefe15c0f4106a95b14",
 "assets/FontManifest.json": "dc3d03800ccca4601324923c0b1d6d57",
-"assets/fonts/MaterialIcons-Regular.otf": "4e6447691c9509f7acdbf8a931a85ca1",
-"assets/NOTICES": "4935b08452742ad5f13b3feadd372483",
+"assets/fonts/MaterialIcons-Regular.otf": "95db9098c58fd6db106f1116bae85a0b",
+"assets/NOTICES": "cf5ad1e77ecc0e5ec2035935f2bfc076",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "6d342eb68f170c97609e9da345464e5e",
-"canvaskit/canvaskit.js": "43fa9e17039a625450b6aba93baf521e",
-"canvaskit/canvaskit.wasm": "04ed3c745ff1dee16504be01f9623498",
-"canvaskit/profiling/canvaskit.js": "f3bfccc993a1e0bfdd3440af60d99df4",
-"canvaskit/profiling/canvaskit.wasm": "a9610cf39260f60fbe7524a785c66101",
+"assets/shaders/ink_sparkle.frag": "6333b551ea27fd9d8e1271e92def26a9",
+"canvaskit/canvaskit.js": "2bc454a691c631b07a9307ac4ca47797",
+"canvaskit/canvaskit.wasm": "bf50631470eb967688cca13ee181af62",
+"canvaskit/profiling/canvaskit.js": "38164e5a72bdad0faa4ce740c9b8e564",
+"canvaskit/profiling/canvaskit.wasm": "95a45378b69e77af5ed2bc72b2209b94",
+"favicon.ico": "89c4c8a3b8caaee546fc87d98784bbd9",
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
+"flutter.js": "f85e6fb278b0fd20c349186fb46ae36d",
 "icons/Icon-192.png": "ac9a721a12bbc803b44f645561ecb1e1",
 "icons/Icon-512.png": "96e752610906ba2a93c65f8abe1645f1",
-"index.html": "a14a18cd2d506e71fe209d43ac667668",
-"/": "a14a18cd2d506e71fe209d43ac667668",
-"main.dart.js": "cf8e741da9957ca886adf55d4f301baf",
-"manifest.json": "9c3c813387ac653ee38c8558305edb35",
-"version.json": "390dc9362de534e754cb70335f3d18ad"
+"icons/Icon-maskable-192.png": "c457ef57daa1d16f64b27b786ec2ea3c",
+"icons/Icon-maskable-512.png": "301a7604d45b3e739efc881eb04896ea",
+"index.html": "f454b64014e2984f0019f812b610f487",
+"/": "f454b64014e2984f0019f812b610f487",
+"main.dart.js": "148334b53da03d2d950cff4fecd00f15",
+"manifest.json": "7483b5b8d040132a99113f9f3e38fd81",
+"version.json": "fed3298085623701a9d36bcc9c610334"
 };
 
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = [
-  "/",
-"main.dart.js",
+  "main.dart.js",
 "index.html",
-"assets/NOTICES",
 "assets/AssetManifest.json",
 "assets/FontManifest.json"];
 // During install, the TEMP cache is populated with the application shell files.
@@ -150,9 +155,11 @@ self.addEventListener("fetch", (event) => {
     .then((cache) =>  {
       return cache.match(event.request).then((response) => {
         // Either respond with the cached resource, or perform a fetch and
-        // lazily populate the cache.
+        // lazily populate the cache only if the resource was successfully fetched.
         return response || fetch(event.request).then((response) => {
-          cache.put(event.request, response.clone());
+          if (response && Boolean(response.ok)) {
+            cache.put(event.request, response.clone());
+          }
           return response;
         });
       })
